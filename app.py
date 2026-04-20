@@ -47,7 +47,7 @@ with col_input:
         backlogs = st.number_input("Total Backlogs", 0, 5, 0)
 
 with col_viz:
-    st.subheader("Live Profile Analysis")
+    st.subheader("Analisis Profil Real-Time")
     
     # Donut Chart untuk Academic Index (Pengganti Spedometer)
     academic_idx = (ssc + hsc + degree + (cgpa*10)) / 4
