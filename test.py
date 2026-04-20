@@ -22,7 +22,7 @@ with st.sidebar:
     st.write("**Instruksi:**")
     st.caption("Input data pada panel yang tersedia. Dashboard akan memperbarui visualisasi secara dinamis.")
 
-st.title("Sistem Proyeksi Karir & Estimasi Remunerasi")
+st.title("Smart Career Analytics: Prediksi Penempatan & Gaji")
 st.write("Evaluasi parameter kompetensi dan performa akademik untuk menentukan indeks kesiapan kerja.")
 
 tab_data, tab_profil = st.tabs(["Indikator Akademik", "Kompetensi & Latar Belakang"])
