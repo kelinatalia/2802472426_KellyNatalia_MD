@@ -35,7 +35,7 @@ def home():
 
 @app.post("/predict")
 def predict(data: StudentData):
-    # Convert input ke DataFrame (sesuai urutan pipeline)
+    # Convert input ke DataFrame 
     input_dict = data.dict()
     df = pd.DataFrame([input_dict])
     
