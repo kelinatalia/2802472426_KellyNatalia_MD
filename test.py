@@ -2,11 +2,9 @@ import streamlit as st
 import pandas as pd
 import pickle
 import plotly.graph_objects as go
-import numpy as np
 
-st.set_page_config(page_title="Student Career Analytics", layout="wide")
+st.set_page_config(page_title="Career Analytics Dashboard", layout="wide")
 
-# load model
 @st.cache_resource
 def load_models():
     with open('classificationModel.pkl', 'rb') as f:
@@ -18,118 +16,104 @@ def load_models():
 clf_model, reg_model = load_models()
 
 with st.sidebar:
-    st.title("Tentang Aplikasi")
-    st.info("""
-    Platform analisis prediktif ini mengevaluasi korelasi antara performa akademik dan kompetensi teknis terhadap peluang karir mahasiswa.
-    """)
-    
+    st.header("Informasi Sistem")
+    st.info("Sistem berbasis kecerdasan buatan ini dirancang untuk melakukan kalkulasi prediktif terhadap potensi rekruitmen mahasiswa berdasarkan metrik akademik.")
     st.markdown("---")
-    st.write("**Petunjuk:**")
-    st.caption("Lengkapi parameter profil Anda di tab Data Input. Sistem akan memproses prediksi secara otomatis melalui dashboard.")
+    st.write("**Instruksi:**")
+    st.caption("Input data pada panel yang tersedia. Dashboard akan memperbarui visualisasi secara dinamis.")
 
-def create_gauge(value, title, max_val, color):
-    fig = go.Figure(go.Indicator(
-        mode = "gauge+number", value = value,
-        domain = {'x': [0, 1], 'y': [0, 1]},
-        title = {'text': title, 'font': {'size': 20}},
-        gauge = {'axis': {'range': [None, max_val], 'tickwidth': 1, 'tickcolor': "white"},
-                 'bar': {'color': color},
-                 'bgcolor': "rgba(0,0,0,0)",
-                 'borderwidth': 2,
-                 'bordercolor': "white",
-                 }
-    ))
-    fig.update_layout(height=280, margin=dict(l=30, r=30, t=50, b=20), paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"})
-    return fig
+st.title("Sistem Proyeksi Karir & Estimasi Remunerasi")
+st.write("Evaluasi parameter kompetensi dan performa akademik untuk menentukan indeks kesiapan kerja.")
 
-def create_radar(values, categories):
-    fig = go.Figure(data=go.Scatterpolar(
-        r=values, theta=categories, fill='toself', line=dict(color='#FF6B6B')
-    ))
-    fig.update_layout(
-        polar=dict(
-            radialaxis=dict(visible=True, range=[0, 100], gridcolor="gray"),
-            angularaxis=dict(gridcolor="gray")
-        ),
-        showlegend=False, height=400, paper_bgcolor='rgba(0,0,0,0)', font={'color': "white"}
-    )
-    return fig
+tab_data, tab_profil = st.tabs(["Indikator Akademik", "Kompetensi & Latar Belakang"])
 
-# main page
-st.title("Student Career Analytics")
+with tab_data:
+    col1, col2 = st.columns(2)
+    with col1:
+        ssc = st.slider("Pencapaian SSC (10th) %", 0, 100, 75)
+        hsc = st.slider("Pencapaian HSC (12th) %", 0, 100, 70)
+        degree = st.slider("Persentase Kelulusan Degree", 0, 100, 72)
+    with col2:
+        cgpa = st.number_input("Skala CGPA Kumulatif (0-10)", 0.0, 10.0, 8.0, step=0.01, format="%.2f")
+        attendance = st.slider("Rasio Kehadiran (%)", 0, 100, 85)
+        entrance = st.slider("Skor Ujian Masuk", 0, 100, 70)
 
-c1, c2 = st.columns(2)
-with c1:
-    ssc = st.slider("SSC % (10th)", 0, 100, 75)
-    hsc = st.slider("HSC % (12th)", 0, 100, 70)
-    degree = st.slider("Degree %", 0, 100, 72)
-with c2:
-    # punya kating itu formatnya 8,00, kita ubah stepnya biar muncul decimal
-    cgpa = st.number_input("Current CGPA (0-10)", 0.0, 10.0, 8.0, step=0.01, format="%.2f")
-    attendance = st.slider("Attendance %", 0, 100, 85)
-    entrance = st.slider("Entrance Score", 0, 100, 70)
-
-tab_skill, tab_bio = st.tabs(["Profil & Keahlian", "Data Tambahan"])
-with tab_skill:
-    ts1, ts2 = st.columns(2)
-    with ts1:
-        tech_skill = st.slider('Technical Skill Score', 0, 100, 80)
-    with ts2:
-        soft_skill = st.slider('Soft Skill Score', 0, 100, 85)
-
-with tab_bio:
-    tb1, tb2 = st.columns(2)
-    with tb1:
-        internship = st.number_input('Internship Count', 0, 15, 1) # pakai plus minus, max dinaikin
-        gender = st.radio('Gender', ['Male', 'Female'], horizontal=True)
-    with tb2:
-        backlogs = st.number_input('Backlogs', 0, 10, 0)
-        extra = st.selectbox('Extracurricular Activities', ['Yes', 'No'])
-
-# data mapping
-input_df = pd.DataFrame([{
-    'ssc_percentage': ssc, 'hsc_percentage': hsc, 'degree_percentage': degree, 
-    'cgpa': cgpa, 'entrance_exam_score': entrance,
-    'technical_skill_score': tech_skill, 'soft_skill_score': soft_skill,
-    'internship_count': internship, 'live_projects': 1,
-    'work_experience_months': 0, 'certifications': 1,
-    'attendance_percentage': attendance, 'backlogs': backlogs,
-    'gender': 1 if gender == 'Male' else 0,
-    'extracurricular_activities': 1 if extra == 'Yes' else 0
-}])
+with tab_profil:
+    col3, col4 = st.columns(2)
+    with col3:
+        tech_skill = st.slider("Skor Kompetensi Teknis", 0, 100, 75)
+        soft_skill = st.slider("Skor Interpersonal (Soft Skill)", 0, 100, 80)
+        gender = st.radio("Identitas Gender", ["Male", "Female"], horizontal=True)
+    with col4:
+        internship = st.number_input("Jumlah Pengalaman Magang", 0, 20, 1)
+        backlogs = st.number_input("Jumlah Mata Kuliah Mengulang", 0, 10, 0)
+        extra = st.radio("Aktivitas Ekstrakurikuler", ["Yes", "No"], horizontal=True)
 
 st.markdown("---")
+st.header("Analisis Profil Real-Time")
 
-st.subheader("Live Profiling Insights")
+g1, g2, g3 = st.columns(3)
 
-g1, g2 = st.columns(2)
 with g1:
     academic_idx = (ssc + hsc + degree + (cgpa*10)) / 4
-    st.plotly_chart(create_gauge(academic_idx, "Academic Index", 100, "#55E6C1"), use_container_width=True)
+    fig_academic = go.Figure(go.Indicator(
+        mode = "gauge+number", value = academic_idx,
+        title = {'text': "Indeks Akademik"},
+        gauge = {'axis': {'range': [None, 100]}, 'bar': {'color': "#00d2d3"}}
+    ))
+    fig_academic.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=20), paper_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig_academic, use_container_width=True)
+
 with g2:
-    total_competency = tech_skill + soft_skill 
-    st.plotly_chart(create_gauge(total_competency, "Total Competency", 200, "#FEA47F"), use_container_width=True)
+    total_comp = tech_skill + soft_skill
+    fig_comp = go.Figure(go.Indicator(
+        mode = "gauge+number", value = total_comp,
+        title = {'text': "Akumulasi Kompetensi"},
+        gauge = {'axis': {'range': [None, 200]}, 'bar': {'color': "#ff9f43"}}
+    ))
+    fig_comp.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=20), paper_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig_comp, use_container_width=True)
 
-r1, r2 = st.columns([2, 1])
-with r1:
-    st.write("**Sebaran Kompetensi**")
-    radar_cats = ['SSC', 'HSC', 'Degree', 'Technical', 'Soft Skill']
-    radar_vals = [ssc, hsc, degree, tech_skill, soft_skill]
-    st.plotly_chart(create_radar(radar_vals, radar_cats), use_container_width=True)
-    
-    readiness_pts = int(academic_idx / 10) 
-    st.info(f"Job Readiness: {readiness_pts} Pts")
+with g3:
+    fig_mini_radar = go.Figure(data=go.Scatterpolar(
+        r=[ssc, hsc, degree, tech_skill, soft_skill],
+        theta=['SSC', 'HSC', 'Degree', 'Tech', 'Soft'],
+        fill='toself', line=dict(color='#54a0ff')
+    ))
+    fig_mini_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), showlegend=False, height=250, margin=dict(l=30, r=30, t=30, b=30))
+    st.plotly_chart(fig_mini_radar, use_container_width=True)
 
-with r2:
-    st.write("**Hasil Prediksi Model**")
+st.info(f"Kesiapan Kerja (Readiness Score): {int(academic_idx/10)} Pts")
+
+st.markdown("---")
+if st.button("Jalankan Inferensi Model", type="primary", use_container_width=True):
+    input_df = pd.DataFrame([{
+        'ssc_percentage': ssc, 'hsc_percentage': hsc, 'degree_percentage': degree, 'cgpa': cgpa, 
+        'entrance_exam_score': entrance, 'technical_skill_score': tech_skill, 'soft_skill_score': soft_skill, 
+        'internship_count': internship, 'live_projects': 1, 'work_experience_months': 0, 'certifications': 1, 
+        'attendance_percentage': attendance, 'backlogs': backlogs, 'gender': 1 if gender == "Male" else 0, 
+        'extracurricular_activities': 1 if extra == "Yes" else 0
+    }])
     
-    if st.button("Analisa Profil Saya", type="primary", use_container_width=True):
-        prediction = clf_model.predict(input_df)
-        if prediction[0] == 1:
-            st.success("🎯 **STATUS: PLACED**")
+    res_col1, res_col2 = st.columns([1, 1])
+    
+    with res_col1:
+        pred = clf_model.predict(input_df)[0]
+        if pred == 1:
+            st.success("Hasil Proyeksi: PLACED (Terklasifikasi Lulus)")
             salary = reg_model.predict(input_df)[0]
-            st.metric("Estimasi Paket Gaji (LPA)", f"₹ {salary:.2f} LPA")
+            st.write("Estimasi Remunerasi Per Tahun")
+            st.title(f"₹ {salary:.2f} LPA")
             st.balloons()
         else:
-            st.error("⚠️ **STATUS: NOT PLACED**")
-            st.write("Fokus pada peningkatan teknis dan pengurangan backlogs.")
+            st.error("Hasil Proyeksi: NOT PLACED (Peluang Rendah)")
+            
+    with res_col2:
+        st.write("**Matriks Radar Kompetensi**")
+        fig_big_radar = go.Figure(data=go.Scatterpolar(
+            r=[ssc, hsc, degree, tech_skill, soft_skill],
+            theta=['Akademik SSC', 'Akademik HSC', 'Degree %', 'Skor Teknis', 'Skor Soft Skill'],
+            fill='toself', fillcolor='rgba(84, 160, 255, 0.5)', line=dict(color='#2e86de')
+        ))
+        fig_big_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), showlegend=False, height=350)
+        st.plotly_chart(fig_big_radar, use_container_width=True)
