@@ -21,7 +21,7 @@ with st.sidebar:
     st.write("Aplikasi ini menggunakan dual-model sistem untuk memprediksi probabilitas penempatan kerja dan estimasi remunerasi.")
     st.info("Pastikan input data sesuai dengan transkrip akademik terbaru.")
 
-st.title("🚀 Career Readiness Dashboard")
+st.title("Career Readiness Dashboard")
 st.markdown("---")
 
 col_input, col_viz = st.columns([1, 1.2])
