@@ -124,7 +124,7 @@ if st.button("Jalankan Inferensi Model", type="primary", use_container_width=Tru
             st.success("Hasil Proyeksi: PLACED (Terklasifikasi Lulus)")
             salary = reg_model.predict(input_df)[0]
             st.write("Estimasi Remunerasi Per Tahun")
-            st.title(f"₹ {salary:.2f} LPA")
+            st.title(f"$ {salary:.2f} USD")
             st.balloons()
         else:
             st.error("Hasil Proyeksi: NOT PLACED (Peluang Rendah)")
