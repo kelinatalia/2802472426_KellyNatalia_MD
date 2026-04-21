@@ -116,25 +116,34 @@ if st.button("Jalankan Inferensi Model", type="primary", use_container_width=Tru
         'extracurricular_activities': 1 if extra == "Yes" else 0
     }])
     
-    res_col1, res_col2 = st.columns([1.5, 1])
+    res_col2, res_col1 = st.columns([1.5, 1])
     
     with res_col1:
-        pred = clf_model.predict(input_df)[0]
-        if pred == 1:
-            st.success("Hasil Proyeksi: PLACED (Terklasifikasi Lulus)")
-            salary = reg_model.predict(input_df)[0]
-            st.write("Estimasi Remunerasi Per Tahun")
-            st.title(f"$ {salary:.2f} USD")
-            st.balloons()
-        else:
-            st.error("Hasil Proyeksi: NOT PLACED (Peluang Rendah)")
-            
-    with res_col2:
-        st.write("**Matriks Radar Kompetensi**")
+        st.markdown("<h3 style='text-align: center;'>Matriks Radar Kompetensi</h3>", unsafe_allow_html=True)
         fig_big_radar = go.Figure(data=go.Scatterpolar(
             r=[ssc, hsc, degree, tech_skill, soft_skill],
-            theta=['Akademik SSC', 'Akademik HSC', 'Degree %', 'Skor Teknis', 'Skor Soft Skill'],
-            fill='toself', fillcolor='rgba(84, 160, 255, 0.5)', line=dict(color='#2e86de')
+            theta=['SSC', 'HSC', 'Degree %', 'Skor Teknis', 'Soft Skill'],
+            fill='toself', 
+            fillcolor='rgba(46, 134, 222, 0.5)', 
+            line=dict(color='#2e86de')
         ))
-        fig_big_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), showlegend=False, height=350)
+        fig_big_radar.update_layout(
+            polar=dict(radialaxis=dict(visible=True, range=[0, 100])), 
+            showlegend=False, 
+            height=400,
+            margin=dict(l=40, r=40, t=20, b=40)
+        )
         st.plotly_chart(fig_big_radar, use_container_width=True)
+            
+    with res_col2:
+        st.subheader("Hasil Analisis AI")
+        pred = clf_model.predict(input_df)[0]
+        if pred == 1:
+            st.success("HASIL: PLACED")
+            raw_salary = reg_model.predict(input_df)[0]
+            salary_idr = raw_salary * 10 
+            st.write("**Estimasi Pendapatan Tahunan:**")
+            st.title(f"Rp {salary_idr:.2f} Juta")
+            st.balloons()
+        else:
+            st.error("HASIL: NOT PLACED")
