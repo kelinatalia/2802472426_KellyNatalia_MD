@@ -91,15 +91,20 @@ with g2:
     st.plotly_chart(fig_comp, use_container_width=True)
 
 with g3:
-    fig_mini_radar = go.Figure(data=go.Scatterpolar(
-        r=[ssc, hsc, degree, tech_skill, soft_skill],
-        theta=['SSC', 'HSC', 'Degree', 'Tech', 'Soft'],
-        fill='toself', fillcolor='rgba(108, 92, 231, 0.3)', line=dict(color='#6c5ce7')
+    overall_detail = (academic_idx + total_comp) / 2
+    fig_overall = go.Figure(go.Indicator(
+        mode = "gauge+number", value = overall_detail,
+        title = {'text': "Overall Readiness", 'font': {'size': 20}},
+        gauge = {
+            'axis': {'range': [None, 100]},
+            'bar': {'color': "#2ecc71"},
+            'shape': "angular"
+        }
     ))
-    fig_mini_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), showlegend=False, height=280, margin=dict(l=40, r=40, t=40, b=40))
-    st.plotly_chart(fig_mini_radar, use_container_width=True)
+    fig_overall.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=20))
+    st.plotly_chart(fig_overall, use_container_width=True)
 
-st.info(f"Readiness Status: Level {int(academic_idx/10)} Proficiency")
+st.info(f"Kesiapan Kerja (Readiness Score): {overall_detail:.2f} Points")
 
 st.markdown("---")
 if st.button("Jalankan Inferensi Model", type="primary", use_container_width=True):
@@ -111,7 +116,7 @@ if st.button("Jalankan Inferensi Model", type="primary", use_container_width=Tru
         'extracurricular_activities': 1 if extra == "Yes" else 0
     }])
     
-    res_col1, res_col2 = st.columns([1, 1])
+    res_col1, res_col2 = st.columns([1.5, 1])
     
     with res_col1:
         pred = clf_model.predict(input_df)[0]
