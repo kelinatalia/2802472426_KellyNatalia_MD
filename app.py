@@ -34,7 +34,7 @@ with tab_data:
         hsc = st.slider("Pencapaian HSC (12th) %", 0, 100, 76)
         degree = st.slider("Persentase Kelulusan Degree", 0, 100, 72)
     with col2:
-        cgpa = st.number_input("Skala CGPA Kumulatif (0-10)", 0.0, 10.0, 7.88.0, step=0.01, format="%.2f")
+        cgpa = st.number_input("Skala CGPA Kumulatif (0-10)", 0.0, 10.0, 7.88, step=0.01, format="%.2f")
         attendance = st.slider("Rasio Kehadiran (%)", 0, 100, 93)
         entrance = st.slider("Skor Ujian Masuk", 0, 100, 68)
 
